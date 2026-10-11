@@ -1,9 +1,9 @@
 ---
-name: artigo-pranchas
-description: Gera post técnico no formato texto + carrossel de pranchas: `artigo.html` (texto pronto para colar no LinkedIn/Medium/blog, com o mapa das imagens) e `sessoes.html` (pranchas 1200×675 em HTML/SVG com design system próprio), exportadas para PNG por `export.sh` com trava de texto estourado. Use quando o usuário pedir artigo, post, carrossel, pranchas, cards ou "imagens para o post" sobre um tema técnico, ou quando quiser transformar uma ideia, um repositório ou um dado em post ilustrado.
+name: article
+description: (/create:article) Gera post técnico no formato texto + carrossel de pranchas: `artigo.html` (texto pronto para colar no LinkedIn/Medium/blog, com o mapa das imagens) e `sessoes.html` (pranchas 1200×675 em HTML/SVG com design system próprio), exportadas para PNG por `export.sh` com trava de texto estourado. Use quando o usuário pedir artigo, post, carrossel, pranchas, cards ou "imagens para o post" sobre um tema técnico, ou quando quiser transformar uma ideia, um repositório ou um dado em post ilustrado.
 ---
 
-# artigo-pranchas
+# /create:article
 
 Post = **um argumento em duas mídias**. Cada seção do texto tem uma prancha, na mesma
 ordem. Quem só vê o carrossel entende; quem só lê o texto também.
@@ -32,12 +32,21 @@ Siga na ordem. Cada passo deixa um artefato.
 
 ### 1. Entrada
 
+Pedido do usuário: $ARGUMENTS
+
 Precisa de: tema, tese em uma frase, público, e **dados reais** disponíveis (repo, log,
 planilha). Se o tema vier de um repositório local, leia o repositório e tire os números
 dele (`git log`, contagem de arquivos, métricas). Número inventado não entra.
 
-Marca: série (texto do rodapé) e site/handle. Se o usuário não disser, pergunte uma vez,
-em uma linha, junto com qualquer outra dúvida. Cores: mantenha as do template salvo pedido.
+Marca, configurada na instalação do plugin:
+
+- URL da empresa: `${user_config.company_url}`
+- Série: `${user_config.series}`
+
+Se a URL acima aparecer vazia ou como placeholder não substituído, pergunte em uma
+linha e diga como gravar para as próximas vezes: `/plugin configure create@artigo-pranchas`.
+No rodapé, mostre a URL sem `https://`, `www.` e barra final (`suaempresa.com.br`).
+Série vazia: use o título curto do post. Cores: mantenha as do template salvo pedido.
 
 ### 2. Roteiro
 
@@ -65,7 +74,7 @@ chmod +x artigo-<slug>/export.sh
 
 ### 4. `sessoes.html`
 
-1. `<title>` e `const POST = { serie, site }`.
+1. `<title>` e `const POST = { serie, site }`, com a série e a URL do passo 1.
 2. Para cada linha do roteiro, parta do bloco `<!-- NN · ... -->` do layout escolhido.
    Reescreva o conteúdo e renumere `data-card` e a `.tag` em sequência (`01`, `02`, ...).
    Se o layout tem IIFE no `<script>`, troque só os dados dela (arrays no topo da função).

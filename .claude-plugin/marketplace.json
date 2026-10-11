@@ -1,18 +1,31 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "artigo-pranchas",
-  "owner": { "name": "Lucas Hiago", "email": "lucashiago.dsf@gmail.com" },
-  "metadata": { "description": "Skill de Claude Code para escrever post técnico com carrossel de pranchas." },
+  "owner": {
+    "name": "Lucas Hiago",
+    "email": "lucashiago.dsf@gmail.com"
+  },
+  "metadata": {
+    "description": "Skill de Claude Code para escrever post técnico com carrossel de pranchas."
+  },
   "plugins": [
     {
-      "name": "artigo-pranchas",
-      "source": "./plugins/artigo-pranchas",
-      "version": "0.1.0",
-      "description": "Texto do post + pranchas 1200×675 em HTML/SVG + export para PNG com trava de estouro.",
+      "name": "create",
+      "source": "./plugins/create",
+      "version": "0.2.0",
+      "description": "/create:article: texto do post + pranchas 1200×675 em HTML/SVG + export para PNG com trava de estouro, com a URL da sua empresa no rodapé.",
       "category": "productivity",
-      "author": { "name": "Lucas Hiago", "email": "lucashiago.dsf@gmail.com" },
+      "author": {
+        "name": "Lucas Hiago",
+        "email": "lucashiago.dsf@gmail.com"
+      },
       "homepage": "https://github.com/LucasHiago/artigo-pranchas",
-      "tags": ["artigo", "carrossel", "linkedin", "conteudo"]
+      "tags": [
+        "artigo",
+        "carrossel",
+        "linkedin",
+        "conteudo"
+      ]
     }
   ]
 }

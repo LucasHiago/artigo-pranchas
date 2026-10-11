@@ -13,14 +13,23 @@ o **texto** pronto para colar no LinkedIn, Medium ou blog, e o **carrossel de pr
 
 ```
 /plugin marketplace add LucasHiago/artigo-pranchas
-/plugin install artigo-pranchas@artigo-pranchas
+/plugin install create@artigo-pranchas
+```
+
+Na instalação o Claude Code pergunta a **URL da sua empresa** (vai no rodapé de toda prancha)
+e, opcional, o nome da série. Para trocar depois:
+
+```
+/plugin configure create@artigo-pranchas
 ```
 
 ## Usar
 
-Peça em linguagem natural:
+```
+/create:article como a gente versiona o banco neste repo
+```
 
-> escreve um post com pranchas sobre como a gente versiona o banco neste repo
+Ou peça em linguagem natural ("escreve um post com pranchas sobre ..."), que a skill dispara sozinha.
 
 A skill segue sempre os mesmos passos:
 
@@ -34,7 +43,7 @@ A skill segue sempre os mesmos passos:
 ## O que vem
 
 ```
-plugins/artigo-pranchas/skills/artigo-pranchas/
+plugins/create/skills/article/
   SKILL.md                 os passos
   templates/sessoes.html   design system + 16 pranchas de exemplo (é o catálogo)
   templates/artigo.html    esqueleto do texto
@@ -44,7 +53,7 @@ plugins/artigo-pranchas/skills/artigo-pranchas/
 ```
 
 As pranchas de exemplo são o post "A IA pode errar. O seu código não precisa", sobre harness
-de IA para código. Troque marca e cores em `references/layouts.md` → *Trocar a marca*.
+de IA para código. A URL configurada substitui o rodapé; cores em `references/layouts.md` → *Trocar a marca*.
 
 ## Requisitos
 
