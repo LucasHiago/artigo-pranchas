@@ -41,7 +41,7 @@ que desenha o SVG dela.
 
 ## Trocar a marca
 
-1. `const POST = { serie, site }` no topo do `<script>`: rodapé de todas as pranchas.
+1. `const POST = { serie, site }` no topo do `<script>`: rodapé de todas as pranchas (`serie` = título curto do post).
 2. Variáveis `:root` (`--primary`, `--primary-alt`, `--primary-deep`, `--accent`, `--accent-alt`).
 3. SVGs têm hex literal. Substitua no arquivo todo:
    `#7E22CE`→primária, `#A855F7`/`#9333EA`→primária clara, `#581C87`→primária escura,

@@ -16,8 +16,8 @@ o **texto** pronto para colar no LinkedIn, Medium ou blog, e o **carrossel de pr
 /plugin install create@artigo-pranchas
 ```
 
-Na instalação o Claude Code pergunta a **URL da sua empresa** (vai no rodapé de toda prancha)
-e, opcional, o nome da série. Para trocar depois:
+Na instalação o Claude Code pergunta a **URL da sua empresa**, que vai no rodapé de toda prancha.
+O outro lado do rodapé é o título curto de cada post. Para trocar a URL depois:
 
 ```
 /plugin configure create@artigo-pranchas
@@ -25,17 +25,33 @@ e, opcional, o nome da série. Para trocar depois:
 
 ## Usar
 
+Dê o tema e uma descrição curta do que quer dizer:
+
 ```
-/create:article como a gente versiona o banco neste repo
+/create:article como a gente versiona o banco neste repo. Para devs que ainda rodam migration na mão; a ideia é mostrar que o CI faz isso melhor
+```
+
+Para controlar o que cada imagem mostra, descreva as pranchas que quiser, uma por linha
+(ou passe o caminho de um `.md` com essas linhas). As que ficarem sem descrição a skill decide:
+
+```
+/create:article migração de banco sem downtime
+01: capa com o banco no centro e as réplicas em volta
+04: linha do tempo da migração, com o momento em que o tráfego troca de banco
+09: gráfico de latência antes e depois, dados em metricas.csv
 ```
 
 Ou peça em linguagem natural ("escreve um post com pranchas sobre ..."), que a skill dispara sozinha.
 
 A skill segue sempre os mesmos passos:
 
-1. **roteiro**: uma tabela com a afirmação de cada prancha, o layout e o dado concreto;
-2. **pranchas** em `artigo-<slug>/sessoes.html`, a partir de um catálogo de 16 layouts
-   (pipeline, grafo, timeline, matriz 2×2, queijo suíço, código ruim × bom, gráfico com dado real...);
+1. **rascunho** em `artigo-<slug>/rascunho.md`: o texto inteiro, seção por seção, e embaixo de cada
+   seção a ideia da imagem (o que mostra, layout, dado). A skill **para e pede aprovação**: responda
+   `ok`, ou aponte o ajuste (`03: troca o exemplo`, `07 imagem: mostra o fluxo ao contrário`).
+   Nada de HTML antes do `ok`;
+2. **pranchas** em `artigo-<slug>/sessoes.html`, partindo de um catálogo de 16 layouts
+   (pipeline, grafo, timeline, matriz 2×2, queijo suíço, código ruim × bom, gráfico com dado real...)
+   ou de um SVG novo quando nenhum layout mostra o mecanismo do tema;
 3. **export** com `export.sh`, que gera `img/card-NN.png` em 2× e **falha se algum texto estourar**
    a prancha (o card tem altura fixa, e texto cortado sumiria calado do PNG);
 4. **texto** em `artigo.html`: uma seção por prancha, na mesma ordem, com o mapa das imagens.

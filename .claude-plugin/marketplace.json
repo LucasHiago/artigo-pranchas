@@ -12,7 +12,7 @@
     {
       "name": "create",
       "source": "./plugins/create",
-      "version": "0.2.0",
+      "version": "0.3.0",
       "description": "/create:article: texto do post + pranchas 1200×675 em HTML/SVG + export para PNG com trava de estouro, com a URL da sua empresa no rodapé.",
       "category": "productivity",
       "author": {
