@@ -1,0 +1,742 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Código com IA, sob controle | pranchas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FAFAF7; --surface:#FFFFFF; --surface-alt:#F5F5F0; --border:#E5E5DC; --border-strong:#D0D0C5;
+  --primary:#7E22CE; --primary-alt:#A855F7; --primary-deep:#581C87; --primary-soft:rgba(168,85,247,.08);
+  --accent:#059669; --accent-alt:#10B981; --accent-soft:rgba(16,185,129,.10);
+  --text:#1A1A1F; --text-mid:#4B4B5C; --text-low:#78788C; --text-faint:#B8B8C7;
+  --danger:#DC2626; --warning:#D97706; --info:#2563EB;
+  --code-bg:#14141C; --code-bg-2:#1C1C28; --code-border:#2A2A3A;
+  --font:'Inter',system-ui,sans-serif; --mono:'JetBrains Mono','SF Mono',Menlo,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+pre,code,.mono{font-variant-ligatures:none;font-feature-settings:'calt' 0}
+body{background:#E9E9E2;font-family:var(--font);color:var(--text);-webkit-font-smoothing:antialiased;padding:48px 24px}
+.sheet{display:flex;flex-direction:column;align-items:center;gap:56px}
+.wrap{display:flex;flex-direction:column;gap:10px;align-items:flex-start}
+.tag{font:600 12px/1 var(--mono);color:#6b6b7a;letter-spacing:.08em;text-transform:uppercase}
+
+.card{width:1200px;height:675px;background:var(--bg);position:relative;overflow:hidden;
+  border:1px solid var(--border-strong);box-shadow:0 18px 40px rgba(15,15,30,.10);
+  display:flex;flex-direction:column;padding:52px 64px 0}
+.card::before{content:"";position:absolute;inset:0 0 auto;height:6px;background:linear-gradient(90deg,#A855F7,#7E22CE 60%,#10B981)}
+.card__foot{margin-top:auto;height:56px;flex:0 0 56px;display:flex;align-items:center;justify-content:space-between;
+  border-top:1px solid var(--border);font:500 13px/1 var(--font);color:var(--text-low)}
+.card__foot b{color:var(--primary);font-weight:800;letter-spacing:-.01em}
+.card__body{flex:1;min-height:0;display:flex;flex-direction:column}
+.fill{flex:1;min-height:0;display:flex;align-items:center;justify-content:center}
+
+.eyebrow{font:800 12px/1 var(--font);letter-spacing:.18em;text-transform:uppercase;color:var(--primary);margin-bottom:14px;display:flex;align-items:center;gap:10px}
+.eyebrow::before{content:"";width:26px;height:2px;background:var(--primary)}
+h1{font-size:60px;font-weight:900;line-height:1.03;letter-spacing:-.035em}
+h2{font-size:36px;font-weight:800;line-height:1.1;letter-spacing:-.025em;margin-bottom:8px}
+.sub{font-size:18px;line-height:1.5;color:var(--text-mid);max-width:940px}
+.hl{color:var(--primary)} .hl-g{color:var(--accent)} .hl-r{color:var(--danger)}
+
+svg text{font-family:var(--font)}
+svg .mono{font-family:var(--mono)}
+
+.code{background:var(--code-bg);border:1px solid var(--code-border);border-radius:6px;overflow:hidden;display:flex;flex-direction:column;min-height:0}
+.code__bar{height:34px;flex:0 0 34px;background:var(--code-bg-2);border-bottom:1px solid var(--code-border);display:flex;align-items:center;gap:8px;padding:0 14px}
+.dot{width:9px;height:9px;border-radius:50%}
+.code__name{font:500 12px/1 var(--mono);color:#7B7B96;margin-left:6px}
+.code__badge{margin-left:auto;font:700 10px/1 var(--mono);letter-spacing:.08em;padding:4px 8px;border-radius:3px;text-transform:uppercase}
+.badge-red{background:rgba(220,38,38,.16);color:#FCA5A5;border:1px solid rgba(220,38,38,.35)}
+.badge-green{background:rgba(16,185,129,.14);color:#6EE7B7;border:1px solid rgba(16,185,129,.35)}
+pre{flex:1;min-height:0;overflow:hidden;padding:16px 18px;font:400 14px/1.62 var(--mono);color:#D6D6E6;white-space:pre}
+pre.sm{font-size:13px;line-height:1.58}
+.k{color:#C084FC}.s{color:#6EE7B7}.c{color:#7A7A96;font-style:italic}.f{color:#93C5FD}.n{color:#FCD34D}
+.mark-bad{background:rgba(220,38,38,.14);border-left:2px solid #DC2626;display:block;margin:0 -18px;padding:0 16px}
+.mark-good{background:rgba(16,185,129,.12);border-left:2px solid #10B981;display:block;margin:0 -18px;padding:0 16px}
+
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:22px;flex:1;min-height:0;margin:18px 0 22px}
+.col{display:flex;flex-direction:column;gap:12px;min-height:0}
+.cap{font:600 13px/1.4 var(--font);color:var(--text-low)} .cap b{color:var(--text)}
+
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.tile{background:var(--surface);border:1px solid var(--border);border-top:3px solid var(--primary);border-radius:4px;padding:16px 18px;display:flex;flex-direction:column;gap:6px}
+.tile .num{font:900 30px/1 var(--font);letter-spacing:-.03em;color:var(--primary)}
+.tile .lbl{font:700 15px/1.2 var(--font)}
+.tile .txt{font:400 13.5px/1.45 var(--font);color:var(--text-mid)}
+.tile.g{border-top-color:var(--accent)} .tile.g .num{color:var(--accent)}
+
+.note{font:400 13px/1.5 var(--font);color:var(--text-low)} .note b{color:var(--text-mid)}
+
+/* pipeline (card 06) */
+.pipe{display:grid;grid-template-columns:repeat(4,1fr);gap:18px 34px;margin:22px 0 24px}
+.st{position:relative;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:16px 16px 14px;display:flex;flex-direction:column;gap:7px;min-height:118px}
+.st::after{content:"";position:absolute;right:-27px;top:50%;width:20px;height:2px;background:var(--primary-alt)}
+.st::before{content:"";position:absolute;right:-29px;top:calc(50% - 4px);border:5px solid transparent;border-left:7px solid var(--primary-alt);transform:translateX(7px)}
+.st:nth-child(4n)::after,.st:nth-child(4n)::before{display:none}
+.st b{font:900 13px/1 var(--mono);color:#fff;background:var(--primary);width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.st h3{font:700 16px/1.2 var(--font)}
+.st code{font:500 12.5px/1.35 var(--mono);color:var(--primary-deep);background:var(--primary-soft);padding:4px 7px;border-radius:3px;align-self:flex-start}
+.st p{font:400 12.5px/1.4 var(--font);color:var(--text-low)}
+.st.g b{background:var(--accent)} .st.g code{color:#065F46;background:var(--accent-soft)}
+
+/* tabela convenções (card 10) */
+table{width:100%;border-collapse:collapse;font-size:14.5px}
+th{text-align:left;font:800 11px/1 var(--font);letter-spacing:.1em;text-transform:uppercase;color:var(--text-low);padding:0 10px 9px;border-bottom:2px solid var(--border-strong)}
+td{padding:9px 10px;border-bottom:1px solid var(--border);color:var(--text-mid);vertical-align:middle}
+td:first-child{color:var(--text);font-weight:600}
+td.mono{font:500 12.5px/1.3 var(--mono);color:var(--primary-deep)}
+tr:last-child td{border-bottom:none}
+
+/* stats (card 11) */
+.big{display:flex;flex-direction:column;gap:18px;justify-content:center}
+.big .stat{border-left:4px solid var(--text-faint);padding:6px 0 6px 18px}
+.big .stat.g{border-left-color:var(--primary)}
+.big .stat strong{display:block;font:900 54px/1 var(--font);letter-spacing:-.04em;color:var(--text-low)}
+.big .stat.g strong{color:var(--primary)}
+.big .stat span{font:600 14px/1.4 var(--font);color:var(--text-mid)}
+
+/* checklist (card 16) */
+.check{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:22px 0 24px;flex:1}
+.ck{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:20px;display:flex;flex-direction:column;gap:10px}
+.ck i{font:900 14px/1 var(--mono);font-style:normal;color:var(--accent);display:flex;align-items:center;gap:8px}
+.ck i::before{content:"";width:18px;height:18px;border-radius:4px;border:2px solid var(--accent);background:var(--accent-soft)}
+.ck h3{font:800 18px/1.2 var(--font);letter-spacing:-.01em}
+.ck p{font:400 14px/1.45 var(--font);color:var(--text-mid)}
+.ck code{font:500 12.5px/1 var(--mono);color:var(--primary-deep);background:var(--primary-soft);padding:2px 5px;border-radius:3px}
+
+body.solo{padding:0;background:#fff;display:flex;align-items:center;justify-content:center;min-height:100vh}
+body.solo .tag{display:none}
+body.solo .sheet{gap:0}
+body.solo .card{border:none;box-shadow:none}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+<!-- 01 · capa -->
+<div class="wrap" data-card="01"><span class="tag">01 · capa</span>
+<div class="card"><div class="card__body" style="flex-direction:row;align-items:center;gap:20px">
+  <div style="flex:1">
+    <div class="eyebrow">Código com IA</div>
+    <h1>A IA pode errar.<br><span class="hl">O seu código</span><br>não precisa.</h1>
+    <p class="sub" style="margin-top:22px;max-width:520px">Determinismo com harness: rules, hooks, skills e agents que mantêm o projeto rápido, documentado e auditável por um humano.</p>
+  </div>
+  <svg id="capa" width="520" height="500" viewBox="0 0 520 500"></svg>
+</div>
+<div class="card__foot"></div></div></div>
+
+<!-- 02 · variância -->
+<div class="wrap" data-card="02"><span class="tag">02 · mesmo pedido, respostas diferentes</span>
+<div class="card"><div class="card__body">
+  <div class="eyebrow">O problema</div>
+  <h2>Mesmo pedido, cinco caminhos. Ou um só.</h2>
+  <p class="sub">O modelo é probabilístico. Sem trilho, cada execução escolhe um padrão. Com portões no caminho, as variações ainda existem, mas todas chegam no mesmo lugar.</p>
+  <div class="fill"><svg width="1072" height="380" viewBox="0 0 1072 380">
+    <defs>
+      <marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#7E22CE"/></marker>
+    </defs>
+    <!-- esquerda -->
+    <rect x="0" y="0" width="520" height="370" rx="8" fill="#fff" stroke="#E5E5DC"/>
+    <text x="22" y="32" font-size="13" font-weight="800" fill="#DC2626" letter-spacing="1.5">SÓ PROMPT</text>
+    <circle cx="40" cy="190" r="9" fill="#1A1A1F"/><text x="22" y="222" font-size="12" fill="#78788C">pedido</text>
+    <g fill="none" stroke-width="2.5" opacity=".85">
+      <path d="M40 190 C140 190 200 70 340 60" stroke="#DC2626"/>
+      <path d="M40 190 C150 190 230 120 340 125" stroke="#D97706"/>
+      <path d="M40 190 C150 190 240 190 340 190" stroke="#059669"/>
+      <path d="M40 190 C150 190 230 260 340 255" stroke="#D97706"/>
+      <path d="M40 190 C140 190 200 320 340 320" stroke="#DC2626"/>
+    </g>
+    <g font-size="13.5" font-weight="600" fill="#1A1A1F">
+      <circle cx="340" cy="60" r="7" fill="#DC2626"/><text x="354" y="65">lib nova, sem motivo</text>
+      <circle cx="340" cy="125" r="7" fill="#D97706"/><text x="354" y="130">padrão inventado</text>
+      <circle cx="340" cy="190" r="7" fill="#059669"/><text x="354" y="195">o que você queria</text>
+      <circle cx="340" cy="255" r="7" fill="#D97706"/><text x="354" y="260">sem teste</text>
+      <circle cx="340" cy="320" r="7" fill="#DC2626"/><text x="354" y="325">helper duplicado</text>
+    </g>
+    <!-- direita -->
+    <g transform="translate(552 0)">
+      <rect x="0" y="0" width="520" height="370" rx="8" fill="#fff" stroke="#E5E5DC"/>
+      <text x="22" y="32" font-size="13" font-weight="800" fill="#059669" letter-spacing="1.5">PROMPT + HARNESS</text>
+      <circle cx="40" cy="190" r="9" fill="#1A1A1F"/><text x="22" y="222" font-size="12" fill="#78788C">pedido</text>
+      <g fill="#7E22CE" opacity=".9">
+        <rect x="165" y="55" width="10" height="110" rx="2"/><rect x="165" y="215" width="10" height="120" rx="2"/>
+        <rect x="285" y="55" width="10" height="120" rx="2"/><rect x="285" y="205" width="10" height="130" rx="2"/>
+        <rect x="395" y="55" width="10" height="125" rx="2"/><rect x="395" y="200" width="10" height="135" rx="2"/>
+      </g>
+      <g font-size="11.5" font-weight="800" fill="#581C87" text-anchor="middle" letter-spacing="1">
+        <text x="170" y="48">CONVENÇÃO</text><text x="290" y="48">TESTE</text><text x="400" y="48">HOOK</text>
+      </g>
+      <g fill="none" stroke="#7E22CE" stroke-width="2.2" opacity=".75">
+        <path d="M40 190 C80 70 130 80 170 172 C210 180 250 182 290 183 C330 184 360 190 400 190 L470 190"/>
+        <path d="M40 190 C80 120 130 130 170 181 C210 185 250 186 290 186 C330 188 360 190 400 190 L470 190"/>
+        <path d="M40 190 C80 190 130 190 170 190 L290 190 L470 190"/>
+        <path d="M40 190 C80 260 130 250 170 199 C210 195 250 194 290 194 C330 192 360 190 400 190 L470 190"/>
+        <path d="M40 190 C80 310 130 300 170 208 C210 200 250 197 290 197 C330 194 360 190 400 190 L470 190"/>
+      </g>
+      <circle cx="476" cy="190" r="12" fill="#059669"/><path d="M470 190l4 4 8-8" stroke="#fff" stroke-width="2.5" fill="none"/>
+      <text x="476" y="226" font-size="13" font-weight="700" fill="#047857" text-anchor="middle">um resultado</text>
+    </g>
+  </svg></div>
+</div>
+<div class="card__foot" data-src="ilustração"></div></div></div>
+
+<!-- 03 · camadas -->
+<div class="wrap" data-card="03"><span class="tag">03 · modelo vs harness</span>
+<div class="card"><div class="card__body" style="flex-direction:row;gap:40px;align-items:center">
+  <svg width="470" height="470" viewBox="0 0 470 470" style="flex:0 0 470px">
+    <g text-anchor="middle">
+      <circle cx="235" cy="235" r="228" fill="rgba(16,185,129,.07)" stroke="#10B981" stroke-width="1.5"/>
+      <circle cx="235" cy="235" r="186" fill="rgba(16,185,129,.06)" stroke="#34D399" stroke-width="1.5"/>
+      <circle cx="235" cy="235" r="144" fill="rgba(168,85,247,.06)" stroke="#A855F7" stroke-width="1.5"/>
+      <circle cx="235" cy="235" r="102" fill="rgba(168,85,247,.09)" stroke="#9333EA" stroke-width="1.5"/>
+      <circle cx="235" cy="235" r="60" fill="#fff" stroke="#7E22CE" stroke-width="1.5"/>
+      <circle cx="235" cy="235" r="36" fill="#F5F5F0" stroke="#78788C" stroke-width="1.5" stroke-dasharray="4 4"/>
+      <text x="235" y="231" font-size="13" font-weight="800" fill="#4B4B5C">modelo</text>
+      <text x="235" y="247" font-size="10.5" fill="#78788C">probabilístico</text>
+      <g font-size="12" font-weight="800" letter-spacing="1.2">
+        <text x="235" y="30" fill="#047857">TESTES + CI</text>
+        <text x="235" y="72" fill="#047857">HOOKS</text>
+        <text x="235" y="114" fill="#7E22CE">AGENTS</text>
+        <text x="235" y="156" fill="#7E22CE">SKILLS</text>
+        <text x="235" y="194" fill="#581C87">RULES</text>
+      </g>
+    </g>
+  </svg>
+  <div style="flex:1">
+    <div class="eyebrow">Modelo vs harness</div>
+    <h2>O modelo é a única parte que você não controla.</h2>
+    <p class="sub" style="font-size:16.5px;margin-bottom:18px">Harness é tudo em volta dele que é código, arquivo e regra versionada. Quanto mais longe do centro, mais determinístico.</p>
+    <table>
+      <tr><td>rules</td><td>o que vale sempre, em toda resposta</td></tr>
+      <tr><td>skills</td><td>o passo a passo de cada tipo de tarefa</td></tr>
+      <tr><td>agents</td><td>quem decide, quem executa, com que ferramenta</td></tr>
+      <tr><td>hooks</td><td>o que roda sem depender de o modelo lembrar</td></tr>
+      <tr><td>testes + CI</td><td>o que impede o merge quando algo quebra</td></tr>
+    </table>
+  </div>
+</div>
+<div class="card__foot"></div></div></div>
+
+<!-- 04 · rules -->
+<div class="wrap" data-card="04"><span class="tag">04 · rules always-on</span>
+<div class="card"><div class="card__body">
+  <div class="eyebrow">Camada 1 · rules</div>
+  <h2>Poucas regras, sempre carregadas, com prioridade.</h2>
+  <div class="grid2">
+    <div class="code"><div class="code__bar"><span class="dot" style="background:#FF5F57"></span><span class="dot" style="background:#FEBC2E"></span><span class="dot" style="background:#28C840"></span><span class="code__name">rules/master.md</span></div>
+<pre class="sm"><span class="c"># Master Rule (trigger → toda alteração de código)</span>
+Aplica sempre. Maior prioridade.
+
+1. <span class="k">YAGNI</span>  sem caller real ≡ não escreve.
+2. <span class="k">DRY</span>    grep antes de escrever. Existe? Reusa.
+3. <span class="k">KISS</span>   3 linhas similares &gt; abstração prematura.
+4. <span class="k">Falha rápido</span>  sem try/catch que engole,
+   sem fallback silencioso.
+5. <span class="k">Comentário</span>  só o porquê. Nunca o quê.
+
+<span class="c">## Over-engineering proibido (sem caller real)</span>
+Factory pra 1 implementação · Generic &lt;T&gt; sem
+2 tipos em uso · Wrapper de lib "caso troquemos"
+· Param opcional não consumido</pre></div>
+    <div class="col">
+      <div class="tiles">
+        <div class="tile"><div class="num">2</div><div class="lbl">rules always-on</div><div class="txt">entram em toda sessão por hook. É o custo fixo de contexto.</div></div>
+        <div class="tile g"><div class="num">15</div><div class="lbl">skills sob demanda</div><div class="txt">só carregam quando a tarefa pede. Não pesam no resto.</div></div>
+      </div>
+      <div class="tile" style="border-top-color:var(--warning);flex:1">
+        <div class="lbl">Por que tão poucas</div>
+        <div class="txt">Regra que vale para tudo compete com a tarefa pela atenção do modelo. Cada linha a mais dilui as outras. O que é específico de Angular, de release ou de SEO vira skill, e só aparece quando o trabalho é aquele.</div>
+      </div>
+      <p class="note">Números do <b>steply-harness</b>, o plugin de Claude Code que uso nos projetos da Steply.</p>
+    </div>
+  </div>
+</div>
+<div class="card__foot"></div></div></div>
+
+<!-- 05 · hooks -->
+<div class="wrap" data-card="05"><span class="tag">05 · hooks</span>
+<div class="card"><div class="card__body">
+  <div class="eyebrow">Camada 2 · hooks</div>
+  <h2>Prompt pede. Hook obriga.</h2>
+  <p class="sub">Hook é um script que o harness executa em pontos fixos da sessão. Não depende de o modelo lembrar, concordar ou interpretar.</p>
+  <div class="fill"><svg width="1072" height="330" viewBox="0 0 1072 330">
+    <line x1="40" y1="70" x2="1032" y2="70" stroke="#D0D0C5" stroke-width="2"/>
+    <g id="hk"></g>
+    <rect x="40" y="250" width="500" height="68" rx="6" fill="#FEF2F2" stroke="#FCA5A5"/>
+    <text x="62" y="278" font-size="14" font-weight="800" fill="#B91C1C">"Por favor, rode os testes antes de terminar."</text>
+    <text x="62" y="301" font-size="13" fill="#7F1D1D">Instrução em prompt: o modelo pode esquecer em contexto longo.</text>
+    <rect x="572" y="250" width="460" height="68" rx="6" fill="#ECFDF5" stroke="#6EE7B7"/>
+    <text x="594" y="278" font-size="14" font-weight="800" fill="#047857" class="mono">Stop → npm test || exit 2</text>
+    <text x="594" y="301" font-size="13" fill="#065F46">Hook: roda sempre. Teste vermelho devolve o turno.</text>
+  </svg></div>
+</div>
+<div class="card__foot" data-src="eventos do Claude Code"></div></div></div>
+
+<!-- 06 · skill feature -->
+<div class="wrap" data-card="06"><span class="tag">06 · skill determinística</span>
+<div class="card"><div class="card__body">
+  <div class="eyebrow">Camada 3 · skills</div>
+  <h2>Skill boa é receita, não conselho.</h2>
+  <p class="sub">A skill <b>feature</b> do harness. Oito passos, sempre na mesma ordem, e cada um deixa um artefato que dá para conferir.</p>
+  <div class="pipe">
+    <div class="st"><b>1</b><h3>Abrir issue</h3><code>gh issue create → #51</code><p>o quê e por quê em 2 linhas</p></div>
+    <div class="st"><b>2</b><h3>Escrever spec</h3><code>docs/specs/51-badge.md</code><p>sem spec, não codifica</p></div>
+    <div class="st"><b>3</b><h3>Criar branch</h3><code>feat/badge-51</code><p>sempre a partir da main</p></div>
+    <div class="st"><b>4</b><h3>Scaffold por CLI</h3><code>ng g component …</code><p>nunca à mão</p></div>
+    <div class="st"><b>5</b><h3>Um teste por critério</h3><code>it('AC1 …')</code><p>o nome cita o critério</p></div>
+    <div class="st"><b>6</b><h3>Commit</h3><code>feat(ui): badge (#51)</code><p>Refs #51</p></div>
+    <div class="st"><b>7</b><h3>Changelog</h3><code>.changelog/ · VERSION</code><p>fragmento ### Added</p></div>
+    <div class="st g"><b>8</b><h3>Pull request</h3><code>PR #52 → main</code><p>linka issue e spec</p></div>
+  </div>
+</div>
+<div class="card__foot" data-src="skills/feature/SKILL.md"></div></div></div>
+
+<!-- 07 · agents -->
+<div class="wrap" data-card="07"><span class="tag">07 · agents</span>
+<div class="card"><div class="card__body">
+  <div class="eyebrow">Camada 4 · agents</div>
+  <h2>Cada agente com um papel, um modelo e um limite.</h2>
+  <p class="sub">Planejamento num modelo maior, execução num menor. Travado no arquivo do agente, não na sessão. E cada um sabe o que <b>não</b> faz.</p>
+  <div class="fill"><svg width="1072" height="370" viewBox="0 0 1072 370">
+    <defs><marker id="ag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#A855F7"/></marker></defs>
+    <g fill="none" stroke="#A855F7" stroke-width="2" marker-end="url(#ag)">
+      <path d="M112 185 L168 185"/>
+      <path d="M400 185 L456 185"/>
+      <path d="M688 165 C730 165 730 92 776 92"/>
+      <path d="M688 205 C730 205 730 278 776 278"/>
+    </g>
+    <g font-size="11" font-weight="700" fill="#7E22CE" text-anchor="middle" class="mono">
+      <text x="140" y="174" class="mono">pedido</text>
+      <text x="428" y="174" class="mono">#N+spec</text>
+      <text x="752" y="150" class="mono">tarefa</text>
+      <text x="752" y="232" class="mono">tarefa</text>
+    </g>
+    <rect x="10" y="155" width="100" height="60" rx="30" fill="#1A1A1F"/>
+    <text x="60" y="191" font-size="15" font-weight="800" fill="#fff" text-anchor="middle">você</text>
+    <g id="agents"></g>
+  </svg></div>
+</div>
+<div class="card__foot" data-src="agents/*.md"></div></div></div>
+
+<!-- 08 · rastreabilidade -->
+<div class="wrap" data-card="08"><span class="tag">08 · documentação que se liga</span>
+<div class="card"><div class="card__body">
+  <div class="eyebrow">Documentar bem</div>
+  <h2>Documentação que se liga, em vez de documentação que se lê.</h2>
+  <p class="sub">Cada artefato aponta para o anterior. De qualquer linha do código dá para voltar até o motivo dela existir.</p>
+  <div class="fill"><svg id="trace" width="1072" height="360" viewBox="0 0 1072 360"></svg></div>
+</div>
+<div class="card__foot"></div></div></div>
+
+<!-- 09 · comentário -->
+<div class="wrap" data-card="09"><span class="tag">09 · comentário: porquê, não o quê</span>
+<div class="card"><div class="card__body">
+  <div class="eyebrow">Documentar o código</div>
+  <h2>Comente o porquê. O quê, o código já diz.</h2>
+  <div class="grid2">
+    <div class="col"><div class="code" style="flex:1"><div class="code__bar"><span class="dot" style="background:#FF5F57"></span><span class="dot" style="background:#FEBC2E"></span><span class="dot" style="background:#28C840"></span><span class="code__name">pagamento.service.ts</span><span class="code__badge badge-red">narra</span></div>
+<pre><span class="mark-bad"><span class="c">// busca o pedido</span></span><span class="k">const</span> pedido = <span class="k">await</span> repo.<span class="f">findOne</span>(id);
+<span class="mark-bad"><span class="c">// se não existir lança erro</span></span><span class="k">if</span> (!pedido) <span class="k">throw new</span> <span class="f">NotFoundException</span>();
+<span class="mark-bad"><span class="c">// verifica se já está pago</span></span><span class="k">if</span> (pedido.pago) <span class="k">return</span> pedido;
+<span class="mark-bad"><span class="c">// marca como pago</span></span>pedido.pago = <span class="k">true</span>;</pre></div>
+    <p class="cap">Quatro comentários, <b>zero informação nova</b>. E ficam errados no primeiro refactor.</p></div>
+    <div class="col"><div class="code" style="flex:1"><div class="code__bar"><span class="dot" style="background:#FF5F57"></span><span class="dot" style="background:#FEBC2E"></span><span class="dot" style="background:#28C840"></span><span class="code__name">pagamento.service.ts</span><span class="code__badge badge-green">explica</span></div>
+<pre><span class="k">const</span> pedido = <span class="k">await</span> repo.<span class="f">findOne</span>(id);
+<span class="k">if</span> (!pedido) <span class="k">throw new</span> <span class="f">NotFoundException</span>();
+
+<span class="mark-good"><span class="c">// O gateway reenvia o webhook até 3 vezes.</span></span><span class="mark-good"><span class="c">// Sem este retorno, um pagamento vira</span></span><span class="mark-good"><span class="c">// três pedidos confirmados.</span></span><span class="k">if</span> (pedido.pago) <span class="k">return</span> pedido;
+pedido.pago = <span class="k">true</span>;</pre></div>
+    <p class="cap">Um comentário só, no lugar que <b>ninguém adivinharia</b>. É ele que impede a IA de "simplificar" o if.</p></div>
+  </div>
+</div>
+<div class="card__foot"></div></div></div>
+
+<!-- 10 · convenções -->
+<div class="wrap" data-card="10"><span class="tag">10 · convenções</span>
+<div class="card"><div class="card__body">
+  <div class="eyebrow">Convenções</div>
+  <h2>Nome previsível é busca que funciona.</h2>
+  <div class="grid2" style="grid-template-columns:400px 1fr">
+    <div class="code"><div class="code__bar"><span class="dot" style="background:#FF5F57"></span><span class="dot" style="background:#FEBC2E"></span><span class="dot" style="background:#28C840"></span><span class="code__name">projeto/</span></div>
+<pre class="sm"><span class="f">.changelog/</span>        <span class="c">fragmentos por PR</span>
+<span class="f">docs/specs/</span>
+  51-badge-tone.md   <span class="c">story + AC</span>
+<span class="f">src/app/shared/ui/badge/</span>
+  badge.ts
+  badge.spec.ts      <span class="c">AC1..AC3</span>
+<span class="n">VERSION</span>            <span class="c">0.1.4</span>
+<span class="n">NEXT.json</span>          <span class="c">épicos abertos</span>
+<span class="n">CLAUDE.md</span>
+
+<span class="c">// settings.json da stack travada</span>
+{ <span class="s">"angular"</span>: <span class="n">20</span>, <span class="s">"zoneless"</span>: <span class="k">true</span>,
+  <span class="s">"standalone"</span>: <span class="k">true</span>, <span class="s">"strict"</span>: <span class="k">true</span>,
+  <span class="s">"style"</span>: <span class="s">"scss"</span>, <span class="s">"ssr"</span>: <span class="k">false</span> }</pre></div>
+    <div class="col">
+      <table>
+        <tr><th>o quê</th><th>formato</th></tr>
+        <tr><td>branch</td><td class="mono">feat/&lt;slug&gt;-&lt;N&gt;</td></tr>
+        <tr><td>commit</td><td class="mono">feat(&lt;escopo&gt;): &lt;título&gt; (#N)</td></tr>
+        <tr><td>spec</td><td class="mono">docs/specs/&lt;N&gt;-&lt;slug&gt;.md</td></tr>
+        <tr><td>teste</td><td class="mono">it('AC&lt;n&gt; …')</td></tr>
+        <tr><td>changelog</td><td class="mono">.changelog/&lt;N&gt;.md · ### Added</td></tr>
+        <tr><td>scaffold</td><td class="mono">ng g · nest g (nunca à mão)</td></tr>
+      </table>
+      <p class="note" style="margin-top:6px">Com o número da issue em tudo, <b>grep '51'</b> devolve a história inteira da mudança: pedido, critério, código, teste e entrega. Para você e para a IA da próxima sessão.</p>
+    </div>
+  </div>
+</div>
+<div class="card__foot"></div></div></div>
+
+<!-- 11 · dado real -->
+<div class="wrap" data-card="11"><span class="tag">11 · antes e depois (git log real)</span>
+<div class="card"><div class="card__body">
+  <div class="eyebrow">Dado real</div>
+  <h2>O histórico do site da Steply, antes e depois do harness.</h2>
+  <div class="grid2" style="grid-template-columns:300px 1fr;gap:34px">
+    <div class="big">
+      <div class="stat"><strong>0 de 91</strong><span>commits rastreáveis entre jan/2025 e abr/2026. Mensagens como "blog update" e "event".</span></div>
+      <div class="stat g"><strong>133 de 136</strong><span>commits no padrão tipo(escopo): título desde mai/2026, quando o harness entrou. 98%.</span></div>
+    </div>
+    <div class="col">
+      <svg id="chart" width="738" height="380" viewBox="0 0 738 380"></svg>
+      <p class="note">Commits sem merge por mês no repositório do site. <b>Roxo</b>: mensagem no padrão convencional. <b>Cinza</b>: fora do padrão.</p>
+    </div>
+  </div>
+</div>
+<div class="card__foot" data-src="fonte: git log do repo steply.com.br"></div></div></div>
+
+<!-- 12 · não se perder -->
+<div class="wrap" data-card="12"><span class="tag">12 · memória do projeto</span>
+<div class="card"><div class="card__body">
+  <div class="eyebrow">Não se perder</div>
+  <h2>A memória do projeto mora no repositório, não na conversa.</h2>
+  <p class="sub">A IA começa toda sessão sem lembrar de nada. Se o estado do projeto está em arquivo, ela e você reencontram o fio em segundos.</p>
+  <div class="fill"><svg id="hub" width="1072" height="370" viewBox="0 0 1072 370"></svg></div>
+</div>
+<div class="card__foot"></div></div></div>
+
+<!-- 13 · quando a IA falha -->
+<div class="wrap" data-card="13"><span class="tag">13 · quando a IA falha</span>
+<div class="card"><div class="card__body">
+  <div class="eyebrow">Quando a IA falha</div>
+  <h2>O erro acontece. Ele só não chega na main.</h2>
+  <p class="sub">Cada camada pega um tipo de falha. Nenhuma é perfeita sozinha. Empilhadas, o que atravessa todas é o código que cumpre a spec.</p>
+  <div class="fill"><svg id="cheese" width="1072" height="380" viewBox="0 0 1072 380"></svg></div>
+</div>
+<div class="card__foot" data-src="modelo de queijo suíço"></div></div></div>
+
+<!-- 14 · prova -->
+<div class="wrap" data-card="14"><span class="tag">14 · prova no processo</span>
+<div class="card"><div class="card__body">
+  <div class="eyebrow">Pronto é provado</div>
+  <h2>Teste verde não é código no ar.</h2>
+  <p class="sub">Processo de longa duração serve o que carregou no boot. Editar o arquivo não muda o que está rodando. Por isso o "pronto" exige prova contra o processo, não contra o fonte.</p>
+  <div class="fill"><svg width="1072" height="350" viewBox="0 0 1072 350">
+    <defs><marker id="pr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#7E22CE"/></marker>
+      <marker id="prr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#DC2626"/></marker></defs>
+    <g id="loop"></g>
+    <path d="M835 150 C835 250 520 270 160 230 L130 180" fill="none" stroke="#DC2626" stroke-width="2" stroke-dasharray="6 5" marker-end="url(#prr)"/>
+    <text x="500" y="282" font-size="13" font-weight="700" fill="#B91C1C" text-anchor="middle">resposta antiga? volta para o começo, o bug está no deploy e não no código</text>
+    <rect x="160" y="300" width="752" height="40" rx="6" fill="#1A1A1F"/>
+    <text x="536" y="326" font-size="14.5" font-weight="700" fill="#fff" text-anchor="middle">o jest lê o fonte · o usuário lê o processo</text>
+  </svg></div>
+</div>
+<div class="card__foot" data-src="rules/master.md"></div></div></div>
+
+<!-- 15 · matriz -->
+<div class="wrap" data-card="15"><span class="tag">15 · rápido e bem feito</span>
+<div class="card"><div class="card__body" style="flex-direction:row;gap:44px;align-items:center">
+  <div style="flex:0 0 380px">
+    <div class="eyebrow">Velocidade × qualidade</div>
+    <h2>Não é escolher entre rápido e bem feito.</h2>
+    <p class="sub" style="font-size:16.5px">A IA resolve a velocidade. O harness resolve a qualidade. Sem harness, você só anda mais rápido para o canto errado do gráfico.</p>
+  </div>
+  <svg width="620" height="520" viewBox="0 0 620 520">
+    <defs><marker id="mx" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="#7E22CE"/></marker></defs>
+    <rect x="60" y="20" width="270" height="230" fill="#F5F5F0"/>
+    <rect x="330" y="20" width="270" height="230" fill="rgba(16,185,129,.12)"/>
+    <rect x="60" y="250" width="270" height="230" fill="#FEF2F2"/>
+    <rect x="330" y="250" width="270" height="230" fill="#FFF7ED"/>
+    <line x1="60" y1="480" x2="606" y2="480" stroke="#1A1A1F" stroke-width="2"/>
+    <line x1="60" y1="480" x2="60" y2="14" stroke="#1A1A1F" stroke-width="2"/>
+    <text x="330" y="508" font-size="13" font-weight="800" fill="#4B4B5C" text-anchor="middle" letter-spacing="1.5">VELOCIDADE DE ENTREGA →</text>
+    <text x="34" y="250" font-size="13" font-weight="800" fill="#4B4B5C" text-anchor="middle" letter-spacing="1.5" transform="rotate(-90 34 250)">QUALIDADE DO CÓDIGO →</text>
+    <g font-weight="800" font-size="18">
+      <text x="84" y="60" fill="#4B4B5C">Artesanal</text>
+      <text x="354" y="60" fill="#047857">IA + harness</text>
+      <text x="84" y="290" fill="#B91C1C">Travado</text>
+      <text x="354" y="290" fill="#B45309">Vibe coding</text>
+    </g>
+    <g font-size="13.5" fill="#4B4B5C">
+      <text x="84" y="84">sólido, mas cada feature</text><text x="84" y="102">custa semanas</text>
+      <text x="354" y="84">rápido, convencional,</text><text x="354" y="102">testado e auditável</text>
+      <text x="84" y="314">lento e frágil ao mesmo tempo</text>
+      <text x="354" y="314">demo em uma tarde, dívida</text><text x="354" y="332">para o ano inteiro</text>
+    </g>
+    <circle cx="510" cy="400" r="12" fill="#D97706"/>
+    <circle cx="520" cy="150" r="14" fill="#059669"/>
+    <path d="M510 386 C540 320 540 230 522 172" fill="none" stroke="#7E22CE" stroke-width="3" stroke-dasharray="7 5" marker-end="url(#mx)"/>
+    <text x="548" y="290" font-size="12.5" font-weight="800" fill="#7E22CE">harness</text>
+    <circle cx="160" cy="170" r="12" fill="#78788C"/>
+  </svg>
+</div>
+<div class="card__foot"></div></div></div>
+
+<!-- 16 · checklist -->
+<div class="wrap" data-card="16"><span class="tag">16 · checklist</span>
+<div class="card"><div class="card__body">
+  <div class="eyebrow">Para começar amanhã</div>
+  <h2>Seis peças, nessa ordem.</h2>
+  <div class="check">
+    <div class="ck"><i>01</i><h3>Uma rule mestra curta</h3><p>YAGNI, DRY, KISS, falha rápido, comentário só do porquê. Menos de uma tela.</p></div>
+    <div class="ck"><i>02</i><h3>Convenção de nome</h3><p>Branch, commit e spec com o número da issue. <code>feat(escopo): título (#N)</code></p></div>
+    <div class="ck"><i>03</i><h3>Spec antes do código</h3><p>Story e critérios de aceite em <code>docs/specs/</code>. Um teste por critério.</p></div>
+    <div class="ck"><i>04</i><h3>Uma skill por tipo de tarefa</h3><p>feature, bugfix, chore. Passos numerados, cada um com artefato verificável.</p></div>
+    <div class="ck"><i>05</i><h3>Hooks no que não pode falhar</h3><p>Contexto no início, bloqueio do perigoso, testes no fim. Código, não pedido.</p></div>
+    <div class="ck"><i>06</i><h3>Agents com limite</h3><p>Quem planeja não executa. Modelo, ferramentas e o que não faz, no arquivo.</p></div>
+  </div>
+</div>
+<div class="card__foot"></div></div></div>
+
+</div>
+<script>
+// marca: vale para o rodapé de todas as pranchas
+const POST = { serie: 'Código com IA, sob controle', site: 'steply.com.br' };
+document.querySelectorAll('.card__foot').forEach(f => {
+  const src = f.dataset.src;
+  f.innerHTML = `<span>${POST.serie}${src ? ' · ' + src : ''}</span><b>${POST.site}</b>`;
+});
+
+const NS = 'http://www.w3.org/2000/svg';
+const el = (tag, attrs, parent, text) => {
+  const n = document.createElementNS(NS, tag);
+  for (const k in attrs) n.setAttribute(k, attrs[k]);
+  if (text != null) n.textContent = text;
+  if (parent) parent.appendChild(n);
+  return n;
+};
+
+// 01 · rede: modelo no centro, harness em volta
+(() => {
+  const s = document.getElementById('capa'), cx = 260, cy = 250;
+  const ring = [
+    ['rules', '#7E22CE'], ['hooks', '#059669'], ['skills', '#7E22CE'], ['agents', '#9333EA'],
+    ['specs', '#2563EB'], ['testes', '#059669'], ['CI', '#047857'], ['convenções', '#581C87'],
+  ];
+  const R = 165, pts = ring.map(([l, c], i) => {
+    const a = -Math.PI / 2 + i * 2 * Math.PI / ring.length;
+    return {l, c, x: cx + R * Math.cos(a), y: cy + R * Math.sin(a), a};
+  });
+  const g = el('g', {}, s);
+  el('circle', {cx, cy, r: R + 62, fill: 'none', stroke: '#E5E5DC', 'stroke-dasharray': '3 6'}, g);
+  el('circle', {cx, cy, r: R, fill: 'none', stroke: '#D0D0C5'}, g);
+  pts.forEach((p, i) => {
+    const q = pts[(i + 3) % pts.length];
+    el('line', {x1: p.x, y1: p.y, x2: q.x, y2: q.y, stroke: '#E5E5DC', 'stroke-width': 1.2}, g);
+    el('line', {x1: cx, y1: cy, x2: p.x, y2: p.y, stroke: '#C4B5FD', 'stroke-width': 1.4, 'stroke-dasharray': '4 4'}, g);
+    for (let k = -1; k <= 1; k++) {
+      const a = p.a + k * 0.16, x = cx + (R + 62) * Math.cos(a), y = cy + (R + 62) * Math.sin(a);
+      el('line', {x1: p.x, y1: p.y, x2: x, y2: y, stroke: p.c, 'stroke-opacity': .35}, g);
+      el('circle', {cx: x, cy: y, r: 4.5, fill: p.c, 'fill-opacity': .55}, g);
+    }
+  });
+  pts.forEach(p => {
+    el('circle', {cx: p.x, cy: p.y, r: 30, fill: '#fff', stroke: p.c, 'stroke-width': 2.5}, g);
+    el('text', {x: p.x, y: p.y + 4.5, 'text-anchor': 'middle', 'font-size': p.l.length > 7 ? 10.5 : 12.5, 'font-weight': 800, fill: p.c}, g, p.l);
+  });
+  el('circle', {cx, cy, r: 50, fill: '#F5F5F0', stroke: '#78788C', 'stroke-width': 2, 'stroke-dasharray': '5 5'}, g);
+  el('text', {x: cx, y: cy - 2, 'text-anchor': 'middle', 'font-size': 15, 'font-weight': 900, fill: '#4B4B5C'}, g, 'modelo');
+  el('text', {x: cx, y: cy + 16, 'text-anchor': 'middle', 'font-size': 11, fill: '#78788C'}, g, 'pode errar');
+})();
+
+// 05 · linha do tempo de hooks
+(() => {
+  const g = document.getElementById('hk');
+  const ev = [
+    ['SessionStart', 'injeta as rules', 'master + caveman', true],
+    ['UserPromptSubmit', 'anexa contexto', 'issue, branch, VERSION', false],
+    ['PreToolUse', 'bloqueia o perigoso', 'rm -rf, push --force, .env', false],
+    ['PostToolUse', 'formata e faz lint', 'no arquivo que mudou', false],
+    ['Stop', 'roda os testes', 'vermelho devolve o turno', false],
+  ];
+  ev.forEach(([n, a, b, real], i) => {
+    const x = 120 + i * 208;
+    el('circle', {cx: x, cy: 70, r: 13, fill: real ? '#7E22CE' : '#fff', stroke: '#7E22CE', 'stroke-width': 3}, g);
+    el('text', {x, y: 36, 'text-anchor': 'middle', 'font-size': 14, 'font-weight': 700, fill: '#1A1A1F', class: 'mono'}, g, n);
+    el('rect', {x: x - 94, y: 104, width: 188, height: 112, rx: 6, fill: '#fff', stroke: real ? '#A855F7' : '#E5E5DC', 'stroke-width': real ? 2 : 1}, g);
+    el('line', {x1: x, y1: 83, x2: x, y2: 104, stroke: '#D0D0C5', 'stroke-width': 2}, g);
+    el('text', {x, y: 140, 'text-anchor': 'middle', 'font-size': 15, 'font-weight': 800, fill: '#1A1A1F'}, g, a);
+    el('text', {x, y: 164, 'text-anchor': 'middle', 'font-size': 12.5, fill: '#78788C'}, g, b);
+    el('text', {x, y: 196, 'text-anchor': 'middle', 'font-size': 10.5, 'font-weight': 800, 'letter-spacing': 1, fill: real ? '#7E22CE' : '#78788C'}, g, real ? 'NO STEPLY-HARNESS' : 'EXEMPLO');
+  });
+})();
+
+// 07 · agentes
+(() => {
+  const g = document.getElementById('agents');
+  const A = [
+    [170, 110, 'po', 'opus', ['classifica a demanda', 'dispara a skill, abre issue'], 'não codifica'],
+    [458, 110, 'tech-lead', 'opus', ['desenha a solução mínima', 'divide e delega'], 'não escolhe skill'],
+    [778, 18, 'frontend-angular', 'sonnet', ['componente, signal, form', 'scaffold por ng g'], 'não decide arquitetura'],
+    [778, 204, 'backend-nestjs', 'sonnet', ['module, service, dto', 'scaffold por nest g'], 'não decide arquitetura'],
+  ];
+  A.forEach(([x, y, n, m, faz, nao]) => {
+    const big = m === 'opus', w = big ? 230 : 280;
+    el('rect', {x, y, width: w, height: 150, rx: 8, fill: '#fff', stroke: big ? '#7E22CE' : '#10B981', 'stroke-width': 2}, g);
+    el('text', {x: x + 16, y: y + 32, 'font-size': 16, 'font-weight': 800, fill: '#1A1A1F', class: 'mono'}, g, n);
+    el('rect', {x: x + w - 70, y: y + 15, width: 56, height: 22, rx: 3, fill: big ? 'rgba(168,85,247,.12)' : 'rgba(16,185,129,.12)'}, g);
+    el('text', {x: x + w - 42, y: y + 30, 'text-anchor': 'middle', 'font-size': 11, 'font-weight': 800, fill: big ? '#7E22CE' : '#047857', class: 'mono'}, g, m);
+    faz.forEach((t, i) => el('text', {x: x + 16, y: y + 62 + i * 22, 'font-size': 13.5, fill: '#4B4B5C'}, g, '✓  ' + t));
+    el('line', {x1: x + 16, y1: y + 112, x2: x + w - 16, y2: y + 112, stroke: '#E5E5DC'}, g);
+    el('text', {x: x + 16, y: y + 134, 'font-size': 13, 'font-weight': 700, fill: '#B91C1C'}, g, '✕  ' + nao);
+  });
+})();
+
+// 08 · grafo de rastreabilidade
+(() => {
+  const s = document.getElementById('trace');
+  const N = {
+    issue: [0, 150, 'issue #51', 'o quê + por quê', '#1A1A1F'],
+    spec: [180, 150, 'spec 51', 'story + 3 critérios', '#7E22CE'],
+    a1: [370, 40, 'AC1', 'tone padrão', '#9333EA'], a2: [370, 150, 'AC2', 'tone danger', '#9333EA'], a3: [370, 260, 'AC3', 'sem texto, some', '#9333EA'],
+    t1: [560, 40, "it('AC1')", 'badge.spec.ts', '#059669'], t2: [560, 150, "it('AC2')", 'badge.spec.ts', '#059669'], t3: [560, 260, "it('AC3')", 'badge.spec.ts', '#059669'],
+    cm: [750, 150, 'feat(ui) (#51)', 'Refs #51', '#2563EB'],
+    pr: [920, 150, 'PR #52', '.changelog · 0.1.4', '#047857'],
+  };
+  const E = [['issue','spec'],['spec','a1'],['spec','a2'],['spec','a3'],['a1','t1'],['a2','t2'],['a3','t3'],['t1','cm'],['t2','cm'],['t3','cm'],['cm','pr']];
+  const W = 150, H = 62;
+  E.forEach(([a, b]) => {
+    const [x1, y1] = N[a], [x2, y2] = N[b];
+    const sx = x1 + W, sy = y1 + H / 2, ex = x2, ey = y2 + H / 2, m = (sx + ex) / 2;
+    el('path', {d: `M${sx} ${sy} C${m} ${sy} ${m} ${ey} ${ex} ${ey}`, fill: 'none', stroke: '#C4B5FD', 'stroke-width': 2}, s);
+    el('circle', {cx: ex, cy: ey, r: 3.5, fill: '#A855F7'}, s);
+  });
+  Object.values(N).forEach(([x, y, t, sub, c]) => {
+    el('rect', {x, y, width: W, height: H, rx: 6, fill: '#fff', stroke: c, 'stroke-width': 2}, s);
+    el('rect', {x, y, width: 5, height: H, rx: 2, fill: c}, s);
+    el('text', {x: x + 16, y: y + 26, 'font-size': 14, 'font-weight': 800, fill: c, class: 'mono'}, s, t);
+    el('text', {x: x + 16, y: y + 46, 'font-size': 12, fill: '#78788C'}, s, sub);
+  });
+  el('text', {x: 536, y: 352, 'text-anchor': 'middle', 'font-size': 13, 'font-weight': 700, fill: '#4B4B5C'}, s, 'leia da direita para a esquerda: do PR você chega ao motivo; da esquerda para a direita: do pedido você chega à prova');
+})();
+
+// 11 · gráfico real (git log --no-merges, por mês)
+(() => {
+  const s = document.getElementById('chart');
+  const D = [
+    ['jan','25',13,0],['fev','25',0,0],['mar','25',2,0],['abr','25',8,0],['mai','25',10,0],['jun','25',33,0],['jul','25',4,0],
+    ['ago','25',2,0],['set','25',1,0],['out','25',7,0],['nov','25',1,0],['dez','25',2,0],['jan','26',3,0],['fev','26',0,0],
+    ['mar','26',4,0],['abr','26',1,0],['mai','26',54,53],['jun','26',24,23],['jul','26',35,34],['ago','26',7,7],['set','26',14,14],['out','26',2,2],
+  ];
+  const L = 34, B = 330, T = 20, W = 738 - L - 6, max = 60, bw = W / D.length;
+  [0, 20, 40, 60].forEach(v => {
+    const y = B - (v / max) * (B - T);
+    el('line', {x1: L, y1: y, x2: 738, y2: y, stroke: '#E5E5DC'}, s);
+    el('text', {x: L - 8, y: y + 4, 'text-anchor': 'end', 'font-size': 11, fill: '#78788C'}, s, v);
+  });
+  const cut = L + 16 * bw;
+  el('rect', {x: cut, y: T - 10, width: 738 - cut, height: B - T + 10, fill: 'rgba(168,85,247,.05)'}, s);
+  el('line', {x1: cut, y1: T - 10, x2: cut, y2: B, stroke: '#7E22CE', 'stroke-width': 2, 'stroke-dasharray': '5 4'}, s);
+  el('text', {x: cut + 10, y: T + 6, 'font-size': 12.5, 'font-weight': 800, fill: '#7E22CE'}, s, 'harness entra · mai/2026');
+  D.forEach(([m, y, tot, conv], i) => {
+    const x = L + i * bw + bw * .18, w = bw * .64, h = v => (v / max) * (B - T);
+    if (tot - conv) el('rect', {x, y: B - h(tot), width: w, height: h(tot - conv), fill: '#D0D0C5', rx: 1}, s);
+    if (conv) el('rect', {x, y: B - h(conv), width: w, height: h(conv), fill: '#7E22CE', rx: 1}, s);
+    if (tot) el('text', {x: x + w / 2, y: B - h(tot) - 6, 'text-anchor': 'middle', 'font-size': 10.5, 'font-weight': 700, fill: '#78788C'}, s, tot);
+    el('text', {x: x + w / 2, y: B + 18, 'text-anchor': 'middle', 'font-size': 10.5, fill: '#78788C'}, s, m);
+    if (m === 'jan') el('text', {x: x + w / 2, y: B + 34, 'text-anchor': 'middle', 'font-size': 10.5, 'font-weight': 800, fill: '#4B4B5C'}, s, '20' + y);
+  });
+  el('line', {x1: L, y1: B, x2: 738, y2: B, stroke: '#1A1A1F', 'stroke-width': 1.5}, s);
+})();
+
+// 12 · hub da memória do projeto
+(() => {
+  const s = document.getElementById('hub'), cx = 536, cy = 185;
+  const F = [
+    ['docs/specs/', 'o que foi pedido?', '#7E22CE', 130, 55],
+    ['NEXT.json', 'o que falta fazer?', '#9333EA', 130, 185],
+    ['issues #N', 'por que existe?', '#2563EB', 130, 315],
+    ['.changelog/', 'o que mudou?', '#059669', 942, 55],
+    ['VERSION · HISTORY', 'em que ponto estamos?', '#047857', 942, 185],
+    ['CLAUDE.md · rules', 'como se trabalha aqui?', '#581C87', 942, 315],
+  ];
+  F.forEach(([n, q, c, x, y]) => {
+    const sx = x < cx ? x + 120 : x - 120;
+    el('path', {d: `M${sx} ${y} C${(sx + cx) / 2} ${y} ${(sx + cx) / 2} ${cy} ${cx + (x < cx ? -80 : 80)} ${cy}`, fill: 'none', stroke: c, 'stroke-opacity': .45, 'stroke-width': 2}, s);
+  });
+  F.forEach(([n, q, c, x, y]) => {
+    el('rect', {x: x - 120, y: y - 34, width: 240, height: 68, rx: 8, fill: '#fff', stroke: c, 'stroke-width': 2}, s);
+    el('text', {x, y: y - 6, 'text-anchor': 'middle', 'font-size': 14.5, 'font-weight': 800, fill: c, class: 'mono'}, s, n);
+    el('text', {x, y: y + 18, 'text-anchor': 'middle', 'font-size': 13.5, fill: '#4B4B5C'}, s, q);
+  });
+  el('circle', {cx, cy, r: 82, fill: 'rgba(168,85,247,.08)', stroke: '#7E22CE', 'stroke-width': 2}, s);
+  el('circle', {cx, cy, r: 60, fill: '#7E22CE'}, s);
+  el('text', {x: cx, y: cy - 2, 'text-anchor': 'middle', 'font-size': 17, 'font-weight': 900, fill: '#fff'}, s, 'repositório');
+  el('text', {x: cx, y: cy + 18, 'text-anchor': 'middle', 'font-size': 11.5, fill: '#E9D5FF'}, s, 'versionado');
+})();
+
+// 13 · queijo suíço
+(() => {
+  const s = document.getElementById('cheese');
+  const L = [['rules', 250], ['skill + spec', 410], ['testes', 570], ['hooks', 730], ['review humano', 890]];
+  const errs = ['dependência nova sem motivo', 'feature sem critério de aceite', 'regra de negócio quebrada', 'rm -rf, push --force, .env', 'solução certa, desenho torto'];
+  const ys = [70, 125, 180, 290, 345], ok = 235;
+  L.forEach(([n, x]) => {
+    el('rect', {x, y: 40, width: 26, height: ok - 16 - 40, rx: 3, fill: '#E9D5FF', stroke: '#A855F7'}, s);
+    el('rect', {x, y: ok + 16, width: 26, height: 370 - ok - 16, rx: 3, fill: '#E9D5FF', stroke: '#A855F7'}, s);
+    el('text', {x: x + 13, y: 26, 'text-anchor': 'middle', 'font-size': 12.5, 'font-weight': 800, fill: '#581C87'}, s, n);
+  });
+  errs.forEach((t, i) => {
+    const y = ys[i], xe = L[i][1] - 4;
+    el('line', {x1: 10, y1: y, x2: xe, y2: y, stroke: '#DC2626', 'stroke-width': 2, 'stroke-dasharray': '6 4'}, s);
+    el('text', {x: 10, y: y - 8, 'font-size': 12.5, 'font-weight': 700, fill: '#B91C1C'}, s, t);
+    el('path', {d: `M${xe - 7} ${y - 7}L${xe + 7} ${y + 7}M${xe + 7} ${y - 7}L${xe - 7} ${y + 7}`, stroke: '#DC2626', 'stroke-width': 3}, s);
+  });
+  el('line', {x1: 10, y1: ok, x2: 990, y2: ok, stroke: '#059669', 'stroke-width': 3.5}, s);
+  el('text', {x: 10, y: ok - 10, 'font-size': 13, 'font-weight': 800, fill: '#047857'}, s, 'código que cumpre a spec');
+  el('rect', {x: 990, y: ok - 26, width: 76, height: 52, rx: 8, fill: '#059669'}, s);
+  el('text', {x: 1028, y: ok + 6, 'text-anchor': 'middle', 'font-size': 16, 'font-weight': 900, fill: '#fff', class: 'mono'}, s, 'main');
+})();
+
+// 14 · loop de prova
+(() => {
+  const g = document.getElementById('loop');
+  const S = [['editar', 'o fonte'], ['build', 'npm run build'], ['recarregar', 'make restart'], ['provar', 'curl no endpoint'], ['pronto', 'só agora']];
+  S.forEach(([t, c], i) => {
+    const x = 20 + i * 210, last = i === S.length - 1;
+    el('rect', {x, y: 60, width: 170, height: 90, rx: 10, fill: last ? '#059669' : '#fff', stroke: last ? '#059669' : (i === 3 ? '#7E22CE' : '#D0D0C5'), 'stroke-width': i === 3 ? 3 : 2}, g);
+    el('text', {x: x + 85, y: 98, 'text-anchor': 'middle', 'font-size': 19, 'font-weight': 900, fill: last ? '#fff' : '#1A1A1F'}, g, t);
+    el('text', {x: x + 85, y: 124, 'text-anchor': 'middle', 'font-size': 13, fill: last ? '#D1FAE5' : '#78788C', class: 'mono'}, g, c);
+    if (!last) el('line', {x1: x + 174, y1: 105, x2: x + 204, y2: 105, stroke: '#7E22CE', 'stroke-width': 2.5, 'marker-end': 'url(#pr)'}, g);
+  });
+  el('text', {x: 735, y: 44, 'text-anchor': 'middle', 'font-size': 12, 'font-weight': 800, fill: '#7E22CE', 'letter-spacing': 1}, g, 'O PASSO QUE A IA PULA');
+})();
+
+// solo=<n> isola um card para print automatizado
+const solo = new URLSearchParams(location.search).get('solo');
+if (solo) {
+  document.body.classList.add('solo');
+  document.querySelectorAll('.wrap').forEach(w => { if (w.dataset.card !== solo.padStart(2, '0')) w.remove(); });
+}
+
+// card tem altura fixa e overflow:hidden, então texto que estoura some calado.
+// Marca o estouro na própria prancha e em body[data-overflow] para o export.sh barrar.
+document.fonts.ready.then(() => {
+  const bad = [];
+  document.querySelectorAll('.wrap').forEach(w => {
+    w.querySelectorAll('.card__body, .fill, pre, .col, .tile, .st, .ck').forEach(e => {
+      // largura só em <pre>: as setas do pipeline são pseudo-elementos fora da caixa de propósito
+      if (e.scrollHeight > e.clientHeight + 1 || (e.tagName === 'PRE' && e.scrollWidth > e.clientWidth + 1)) {
+        e.style.outline = '3px solid #DC2626';
+        bad.push(w.dataset.card);
+      }
+    });
+  });
+  document.body.dataset.overflow = [...new Set(bad)].join(',');
+});
+</script>
+</body>
+</html>

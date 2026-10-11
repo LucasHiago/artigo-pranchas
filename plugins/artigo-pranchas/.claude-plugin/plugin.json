@@ -1,0 +1,9 @@
+{
+  "name": "artigo-pranchas",
+  "description": "Post técnico em duas mídias: texto pronto para publicar + carrossel de pranchas 1200×675 em HTML/SVG, exportado para PNG com trava de texto estourado.",
+  "version": "0.1.0",
+  "author": { "name": "Lucas Hiago", "email": "lucashiago.dsf@gmail.com" },
+  "repository": "https://github.com/LucasHiago/artigo-pranchas",
+  "license": "MIT",
+  "keywords": ["artigo", "post", "carrossel", "linkedin", "pranchas", "svg", "conteudo"]
+}
