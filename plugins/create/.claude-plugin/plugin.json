@@ -1,7 +1,7 @@
 {
   "name": "create",
   "description": "/create:article escreve post técnico em duas mídias: texto pronto para publicar + carrossel de pranchas 1200×675 em HTML/SVG, exportado para PNG com trava de texto estourado. A URL da sua empresa vai no rodapé de cada prancha.",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "author": { "name": "Lucas Hiago", "email": "lucashiago.dsf@gmail.com" },
   "repository": "https://github.com/LucasHiago/artigo-pranchas",
   "license": "MIT",

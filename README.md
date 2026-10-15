@@ -41,35 +41,50 @@ Para controlar o que cada imagem mostra, descreva as pranchas que quiser, uma po
 09: gráfico de latência antes e depois, dados em metricas.csv
 ```
 
+O mesmo pedido cabe num arquivo. Copie o modelo
+[`templates/pedido.md`](plugins/create/skills/article/templates/pedido.md), edite e passe o caminho:
+
+```
+/create:article ./pedido.md
+```
+
 Ou peça em linguagem natural ("escreve um post com pranchas sobre ..."), que a skill dispara sozinha.
 
 A skill segue sempre os mesmos passos:
 
-1. **rascunho** em `artigo-<slug>/rascunho.md`: o texto inteiro, seção por seção, e embaixo de cada
+1. **direção visual** em `artigo-<slug>/direcao.md`: o mundo visual deste post (arquétipo de capa,
+   paleta, fontes, moldura, jeito de desenhar diagrama), escolhido a partir do tema e diferente dos
+   posts anteriores na mesma pasta. Usa as skills `taste-skill` e `impeccable` se estiverem instaladas;
+   sem elas, segue o resumo em `references/direcao.md`. Só o rodapé é fixo entre posts;
+2. **rascunho** em `artigo-<slug>/rascunho.md`: o texto inteiro, seção por seção, e embaixo de cada
    seção a ideia da imagem (o que mostra, layout, dado). A skill **para e pede aprovação**: responda
    `ok`, ou aponte o ajuste (`03: troca o exemplo`, `07 imagem: mostra o fluxo ao contrário`).
-   Nada de HTML antes do `ok`;
-2. **pranchas** em `artigo-<slug>/sessoes.html`, partindo de um catálogo de 16 layouts
+   A direção é aprovada junto (`capa: tipográfica`, `direção: fundo escuro`). Nada de HTML antes do `ok`;
+3. **pranchas** em `artigo-<slug>/sessoes.html`, partindo de um catálogo de 16 layouts
    (pipeline, grafo, timeline, matriz 2×2, queijo suíço, código ruim × bom, gráfico com dado real...)
-   ou de um SVG novo quando nenhum layout mostra o mecanismo do tema;
-3. **export** com `export.sh`, que gera `img/card-NN.png` em 2× e **falha se algum texto estourar**
+   redesenhados na direção do post, e de SVGs novos: a capa é sempre nova e pelo menos 1/3 das
+   pranchas não sai do catálogo;
+4. **export** com `export.sh`, que gera `img/card-NN.png` em 2× e **falha se algum texto estourar**
    a prancha (o card tem altura fixa, e texto cortado sumiria calado do PNG);
-4. **texto** em `artigo.html`: uma seção por prancha, na mesma ordem, com o mapa das imagens.
+5. **texto** em `artigo.html`: uma seção por prancha, na mesma ordem, com o mapa das imagens.
 
 ## O que vem
 
 ```
 plugins/create/skills/article/
   SKILL.md                 os passos
-  templates/sessoes.html   design system + 16 pranchas de exemplo (é o catálogo)
+  templates/sessoes.html   design system mecânico + 16 pranchas de exemplo (é o catálogo)
   templates/artigo.html    esqueleto do texto
   templates/export.sh      exportador com trava de estouro
-  references/layouts.md    qual layout para qual ideia; como trocar a marca
+  templates/pedido.md      modelo de pedido em arquivo (tema, descrição, pranchas)
+  references/direcao.md    direção visual por post: capa, paleta, fontes, moldura, memória
+  references/layouts.md    qual layout para qual ideia
   references/texto.md      estrutura e estilo do texto
 ```
 
 As pranchas de exemplo são o post "A IA pode errar. O seu código não precisa", sobre harness
-de IA para código. A URL configurada substitui o rodapé; cores em `references/layouts.md` → *Trocar a marca*.
+de IA para código. A URL configurada substitui o rodapé; o visual roxo do exemplo não
+se repete: cada post ganha o seu (`references/direcao.md`).
 
 ## Requisitos
 

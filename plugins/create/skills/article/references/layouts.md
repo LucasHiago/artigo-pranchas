@@ -1,13 +1,16 @@
 # Catálogo de layouts
 
 `templates/sessoes.html` é um post completo de 16 pranchas, e cada prancha é um
-layout reaproveitável. Escolha pelo **formato da ideia**, não pelo tema. Copie o
+layout reaproveitável **na mecânica**: a aparência (roxo, Inter, faixa, eyebrow) é do
+post de exemplo e é trocada pela direção de cada post (`references/direcao.md`).
+Nenhum layout entra mais de uma vez num post, e o reaproveitado é redesenhado na
+gramática do post, não só recolorido. Escolha pelo **formato da ideia**, não pelo tema. Copie o
 bloco `<!-- NN · ... -->` inteiro e, se houver, a IIFE `// NN · ...` do `<script>`
 que desenha o SVG dela.
 
 | # | layout | serve para | peças |
 |---|---|---|---|
-| 01 | capa · texto + rede radial | abrir o post; um centro e o que gira em volta | `h1` com `.hl`, `.sub`, IIFE `capa` (anel de nós, `ring = [[rótulo, cor], ...]`) |
+| 01 | rede radial (exemplo de capa) | **não é capa**: a capa é sempre nova (`direcao.md` §4). Serve no miolo para um centro e o que gira em volta | `h1` com `.hl`, `.sub`, IIFE `capa` (anel de nós, `ring = [[rótulo, cor], ...]`) |
 | 02 | dois painéis lado a lado (SVG) | antes × depois, caos × ordem, sem X × com X | SVG estático, dois `rect` 520 de largura |
 | 03 | círculos concêntricos + tabela | camadas, do núcleo para fora | SVG estático + `table` de 2 colunas |
 | 04 | código + tiles numéricos | mostrar um arquivo real e os números que ele gera | `.grid2` → `.code` + `.tiles` (`.tile`, `.tile.g`) + `.note` |
@@ -22,7 +25,7 @@ que desenha o SVG dela.
 | 13 | queijo suíço | camadas que barram falhas diferentes | IIFE `cheese` (`L` camadas, `errs` falhas, uma por camada) |
 | 14 | loop de passos com retorno | processo com um passo que costuma ser pulado | IIFE `loop` (`S = [[passo, comando], ...]`), seta tracejada de volta |
 | 15 | matriz 2×2 | dois eixos, quatro quadrantes, um movimento | SVG estático; mova os `circle` e a seta |
-| 16 | checklist 3×2 | fechamento: o que fazer amanhã | `.check` → `.ck` (`i` número, `h3`, `p`) |
+| 16 | checklist 3×2 | fechamento, **último recurso**: prefira o formato do mundo do post (`direcao.md` §8) | `.check` → `.ck` (`i` número, `h3`, `p`) |
 
 ## Peças soltas
 
@@ -39,12 +42,7 @@ que desenha o SVG dela.
 - SVG com `eyebrow` + `h2` + `.sub` de 2 linhas acima: altura até ~370. Sem `.sub`: dá para subir.
 - Não calcule no olho: o `export.sh` mede e barra a prancha que estourar.
 
-## Trocar a marca
+## Trocar a aparência
 
-1. `const POST = { serie, site }` no topo do `<script>`: rodapé de todas as pranchas (`serie` = título curto do post).
-2. Variáveis `:root` (`--primary`, `--primary-alt`, `--primary-deep`, `--accent`, `--accent-alt`).
-3. SVGs têm hex literal. Substitua no arquivo todo:
-   `#7E22CE`→primária, `#A855F7`/`#9333EA`→primária clara, `#581C87`→primária escura,
-   `#E9D5FF`/`#C4B5FD`→primária bem clara, `rgba(168,85,247,`→primária em rgba,
-   `#059669`/`#10B981`/`#047857`→acento. Mantenha vermelho/âmbar: são semânticos (erro/alerta).
-4. Gradiente do topo: `.card::before`.
+Cores, fontes, faixa do topo, raio e hex literais dos SVGs: `references/direcao.md`, seção 9.
+O rodapé de todas as pranchas vem de `const POST = { serie, site }` no topo do `<script>`.
